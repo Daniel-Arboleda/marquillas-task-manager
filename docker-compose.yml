@@ -1,0 +1,37 @@
+name: marquillas-task-manager
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: marquillas_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: marquillas_frontend
+    ports:
+      - "5173:80"
+    restart: unless-stopped
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: marquillas_sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+    ports:
+      - "1433:1433"
+    volumes:
+      - marquillas_sqlserver_data:/var/opt/mssql
+    restart: unless-stopped
+
+volumes:
+  marquillas_sqlserver_data:
+    name: marquillas_sqlserver_data
