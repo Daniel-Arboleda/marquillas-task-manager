@@ -5,6 +5,18 @@ services:
     build:
       context: ./backend
     container_name: marquillas_backend
+    environment:
+      APP_NAME: "Marquillas Task Manager API"
+      APP_ENV: "development"
+      APP_DEBUG: "false"
+      DATABASE_HOST: "sqlserver"
+      DATABASE_PORT: "1433"
+      DATABASE_NAME: "marquillas_tasks"
+      DATABASE_USER: "sa"
+      DATABASE_PASSWORD: "${MSSQL_SA_PASSWORD}"
+      DATABASE_DRIVER: "ODBC Driver 18 for SQL Server"
+      DATABASE_ENCRYPT: "true"
+      DATABASE_TRUST_SERVER_CERTIFICATE: "true"
     ports:
       - "8000:8000"
     volumes:
