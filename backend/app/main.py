@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.modules.health.health_routes import router as health_router
+
+
 app = FastAPI(
     title="Marquillas Task Manager API",
     description="Technical Assessment Backend",
@@ -17,11 +20,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@app.get("/health", tags=["Health"])
-def health():
-    return {
-        "status": "ok",
-        "service": "marquillas-task-manager-api",
-        "version": "0.1.0",
-    }
+app.include_router(health_router)
