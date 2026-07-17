@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     database_encrypt: bool = True
     database_trust_server_certificate: bool = True
 
+    jwt_secret_key: SecretStr
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = Field(default=60, ge=1, le=1440)
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

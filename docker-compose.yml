@@ -17,6 +17,9 @@ services:
       DATABASE_DRIVER: "ODBC Driver 18 for SQL Server"
       DATABASE_ENCRYPT: "true"
       DATABASE_TRUST_SERVER_CERTIFICATE: "true"
+      JWT_SECRET_KEY: "${JWT_SECRET_KEY}"
+      JWT_ALGORITHM: "${JWT_ALGORITHM}"
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: "${JWT_ACCESS_TOKEN_EXPIRE_MINUTES}"
     ports:
       - "8000:8000"
     volumes:
