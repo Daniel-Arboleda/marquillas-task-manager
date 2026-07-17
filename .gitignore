@@ -47,4 +47,8 @@ sqlserver-data/
 
 # Generated
 *.egg-info/
+
+# OpenAPI generated artifact
+openapi.json
+
 '@ | Set-Content .gitignore
