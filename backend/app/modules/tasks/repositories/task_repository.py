@@ -18,22 +18,31 @@ class TaskRepository:
     def get(self, task_id: int) -> Task | None:
         return self.db.get(Task, task_id)
 
-    def list_tasks(self) -> list[Task]:
-        return list(self.db.scalars(select(Task).order_by(Task.id.desc())).all())
-
-    def list_by_user(self, user_id: int) -> list[Task]:
-        return list(
-            self.db.scalars(
-                select(Task)
-                .where(
-                    or_(
-                        Task.created_by == user_id,
-                        Task.assigned_user_id == user_id,
-                    )
+    def list(
+        self,
+        user_id: int | None = None,
+        status: str | None = None,
+        priority: str | None = None,
+        assigned_user_id: int | None = None,
+        page: int = 1,
+        page_size: int = 20,
+    ) -> list[Task]:
+        query = select(Task)
+        if user_id is not None:
+            query = query.where(
+                or_(
+                    Task.created_by == user_id,
+                    Task.assigned_user_id == user_id,
                 )
-                .order_by(Task.id.desc())
-            ).all()
-        )
+            )
+        if status is not None:
+            query = query.where(Task.status == status)
+        if priority is not None:
+            query = query.where(Task.priority == priority)
+        if assigned_user_id is not None:
+            query = query.where(Task.assigned_user_id == assigned_user_id)
+        query = query.order_by(Task.id.desc()).offset((page - 1) * page_size).limit(page_size)
+        return list(self.db.scalars(query).all())
 
     def update(self, task: Task) -> Task:
         self.db.flush()
