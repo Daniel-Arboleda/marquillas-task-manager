@@ -16,7 +16,7 @@ def health() -> dict[str, str]:
     return {
         "status": "ok",
         "service": "marquillas-task-manager-api",
-        "version": "0.1.0",
+        "version": "0.2.0",
     }
 
 

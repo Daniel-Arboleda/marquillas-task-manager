@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.title="Marquillas Task Manager" \
       org.opencontainers.image.vendor="Nexo Software Factory" \
       org.opencontainers.image.authors="Daniel Arboleda" \
       org.opencontainers.image.description="Technical Assessment Backend" \
-      org.opencontainers.image.version="0.1.0"
+      org.opencontainers.image.version="0.2.0"
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1

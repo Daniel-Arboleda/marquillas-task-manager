@@ -3,8 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.modules.auth.api.auth_routes import router as auth_router
 from app.modules.health.health_routes import router as health_router
+from app.modules.tasks.api.task_routes import router as task_router
 from app.modules.users.api.user_routes import router as user_router
-
 
 app = FastAPI(
     title="Marquillas Task Manager API",
@@ -25,3 +25,4 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(user_router)
+app.include_router(task_router)

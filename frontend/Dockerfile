@@ -2,7 +2,7 @@ FROM node:22-alpine AS builder
 LABEL org.opencontainers.image.title="Marquillas Task Manager Frontend"
 LABEL org.opencontainers.image.vendor="Nexo Software Factory"
 LABEL org.opencontainers.image.authors="Daniel Arboleda"
-LABEL org.opencontainers.image.version="0.1.0"
+LABEL org.opencontainers.image.version="0.2.0"
 
 WORKDIR /app
 
