@@ -12,7 +12,7 @@ def test_member_cannot_create_users(
         "/api/users",
         json={
             "name": "Unauthorized User",
-            "email": "unauthorized@test.local",
+            "email": "unauthorized@example.com",
             "password": "Password123!",
             "role": "member",
         },
@@ -32,7 +32,7 @@ def test_admin_can_create_user(
         "/api/users",
         json={
             "name": "Created Member",
-            "email": "created.member@test.local",
+            "email": "created.member@example.com",
             "password": "Password123!",
             "role": "member",
         },
@@ -42,7 +42,7 @@ def test_admin_can_create_user(
     assert response.status_code == 201
     body = response.json()
     assert body["name"] == "Created Member"
-    assert body["email"] == "created.member@test.local"
+    assert body["email"] == "created.member@example.com"
     assert body["role"] == "member"
     assert body["is_active"] is True
     assert "password" not in body

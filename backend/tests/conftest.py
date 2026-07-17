@@ -115,7 +115,7 @@ def admin_user(db_session: Session) -> User:
     return create_test_user(
         db_session=db_session,
         name="Test Admin",
-        email="admin@test.local",
+        email="admin@example.com",
         role="admin",
     )
 
@@ -125,7 +125,7 @@ def member_user(db_session: Session) -> User:
     return create_test_user(
         db_session=db_session,
         name="Test Member",
-        email="member@test.local",
+        email="member@example.com",
         role="member",
     )
 
@@ -135,7 +135,7 @@ def other_member_user(db_session: Session) -> User:
     return create_test_user(
         db_session=db_session,
         name="Other Member",
-        email="other.member@test.local",
+        email="other.member@example.com",
         role="member",
     )
 
