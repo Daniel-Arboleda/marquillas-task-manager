@@ -1,3 +1,23 @@
+# ============================================================
+
+# Marquillas Task Manager
+
+# Document: GODS_PLAN_DAY_02.md
+
+# Title: Task Query Foundation
+
+# Version: 1.0
+
+# Status: Draft | In Progress | Approved | Completed
+
+# Author: Development Team
+
+# Created: 2026-07-17
+
+# Last Update: 2026-07-17
+
+# ============================================================
+
 # Estado estimado al cerrar el Día 02
 
 Si completas correctamente **Identity Foundation** con:
