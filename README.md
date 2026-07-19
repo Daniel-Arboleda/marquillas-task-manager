@@ -4,6 +4,8 @@
 
 Prueba técnica full-stack para gestión de tareas de equipo.
 
+![1784469109683](image/README/1784469109683.png)
+
 ## Estado actual
 
 Día 00 — Fundación del repositorio y entorno reproducible.

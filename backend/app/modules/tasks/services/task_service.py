@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.modules.tasks.repositories.task_repository import TaskRepository
-from app.modules.tasks.schemas.task_schemas import TaskCreate, TaskUpdate
+from app.modules.tasks.schemas.task_schemas import TaskCreate, TaskHistoryListResponse, TaskListResponse, TaskUpdate
 from app.modules.tasks.services.task_command_service import TaskCommandService
 from app.modules.tasks.services.task_query_service import TaskQueryService
 from app.modules.tasks.services.task_validation_service import TaskValidationService
@@ -37,6 +37,20 @@ class TaskService:
         )
         return task
 
+    def history(
+        self,
+        task_id: int,
+        current_user_id: int,
+        is_admin: bool,
+    ) -> TaskHistoryListResponse:
+        task = self.query.get(task_id)
+        self.validation.validate_task_access(
+            task=task,
+            current_user_id=current_user_id,
+            is_admin=is_admin,
+        )
+        return self.query.history(task_id)
+
     def list(
         self,
         current_user_id: int,
@@ -44,13 +58,15 @@ class TaskService:
         status: str | None = None,
         priority: str | None = None,
         assigned_user_id: int | None = None,
+        search: str | None = None,
         page: int = 1,
         page_size: int = 20,
-    ) -> list[Task]:
-        assigned_user_id = self.validation.validate_query(
+    ) -> TaskListResponse:
+        assigned_user_id, search = self.validation.validate_query(
             current_user_id=current_user_id,
             is_admin=is_admin,
             assigned_user_id=assigned_user_id,
+            search=search,
             page=page,
             page_size=page_size,
         )
@@ -60,6 +76,7 @@ class TaskService:
             status=status,
             priority=priority,
             assigned_user_id=assigned_user_id,
+            search=search,
             page=page,
             page_size=page_size,
         )

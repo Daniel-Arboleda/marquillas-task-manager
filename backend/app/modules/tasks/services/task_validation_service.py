@@ -78,14 +78,34 @@ class TaskValidationService:
                 detail="Only administrators can reassign tasks",
             )
 
+    def validate_status_transition(
+        self,
+        current_status: str,
+        requested_status: str | None,
+    ) -> None:
+        if requested_status is None or requested_status == current_status:
+            return
+        allowed_transitions = {
+            "pending": {"in_progress", "completed", "cancelled"},
+            "in_progress": {"pending", "completed", "cancelled"},
+            "completed": {"in_progress"},
+            "cancelled": set(),
+        }
+        if requested_status not in allowed_transitions.get(current_status, set()):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid task status transition",
+            )
+
     def validate_query(
         self,
         current_user_id: int,
         is_admin: bool,
         assigned_user_id: int | None,
+        search: str | None,
         page: int,
         page_size: int,
-    ) -> int | None:
+    ) -> tuple[int | None, str | None]:
         if page < 1:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -96,11 +116,11 @@ class TaskValidationService:
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="Page size must be between 1 and 100",
             )
-        if is_admin or assigned_user_id is None:
-            return assigned_user_id
-        if assigned_user_id != current_user_id:
+        if not is_admin and assigned_user_id is not None and assigned_user_id != current_user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Insufficient permissions",
             )
-        return assigned_user_id
+        if search is not None:
+            search = search.strip() or None
+        return assigned_user_id, search

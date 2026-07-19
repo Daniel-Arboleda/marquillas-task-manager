@@ -1,4 +1,6 @@
-from sqlalchemy import or_, select
+from typing import List
+
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.modules.tasks.task_history_model import TaskHistory
@@ -24,9 +26,10 @@ class TaskRepository:
         status: str | None = None,
         priority: str | None = None,
         assigned_user_id: int | None = None,
+        search: str | None = None,
         page: int = 1,
         page_size: int = 20,
-    ) -> list[Task]:
+    ) -> tuple[List[Task], int]:
         query = select(Task)
         if user_id is not None:
             query = query.where(
@@ -41,8 +44,34 @@ class TaskRepository:
             query = query.where(Task.priority == priority)
         if assigned_user_id is not None:
             query = query.where(Task.assigned_user_id == assigned_user_id)
-        query = query.order_by(Task.id.desc()).offset((page - 1) * page_size).limit(page_size)
-        return list(self.db.scalars(query).all())
+        if search:
+            search = search.strip()
+            if search:
+                pattern = f"%{search}%"
+                query = query.where(
+                    or_(
+                        Task.title.ilike(pattern),
+                        Task.description.ilike(pattern),
+                    )
+                )
+        total = self.db.scalar(
+            select(func.count()).select_from(query.subquery())
+        ) or 0
+        tasks = list(
+            self.db.scalars(
+                query.order_by(Task.id.desc()).offset((page - 1) * page_size).limit(page_size)
+            ).all()
+        )
+        return tasks, total
+
+    def list_history(self, task_id: int) -> List[TaskHistory]:
+        return list(
+            self.db.scalars(
+                select(TaskHistory)
+                .where(TaskHistory.task_id == task_id)
+                .order_by(TaskHistory.created_at.desc(), TaskHistory.id.desc())
+            ).all()
+        )
 
     def update(self, task: Task) -> Task:
         self.db.flush()

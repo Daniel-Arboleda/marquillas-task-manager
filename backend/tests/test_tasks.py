@@ -163,7 +163,11 @@ def test_admin_filters_tasks_by_status(
 
     assert response.status_code == 200
     body = response.json()
+<<<<<<< HEAD
     assert [task["id"] for task in body] == [completed_task.id]
+=======
+    assert [task["id"] for task in body["items"]] == [completed_task.id]
+>>>>>>> development
 
 
 def test_admin_filters_tasks_by_priority(
@@ -192,7 +196,11 @@ def test_admin_filters_tasks_by_priority(
 
     assert response.status_code == 200
     body = response.json()
+<<<<<<< HEAD
     assert [task["id"] for task in body] == [critical_task.id]
+=======
+    assert [task["id"] for task in body["items"]] == [critical_task.id]
+>>>>>>> development
 
 
 def test_admin_filters_tasks_by_assigned_user(
@@ -223,7 +231,11 @@ def test_admin_filters_tasks_by_assigned_user(
 
     assert response.status_code == 200
     body = response.json()
+<<<<<<< HEAD
     assert [task["id"] for task in body] == [assigned_task.id]
+=======
+    assert [task["id"] for task in body["items"]] == [assigned_task.id]
+>>>>>>> development
 
 
 def test_task_list_applies_pagination(
@@ -250,7 +262,11 @@ def test_task_list_applies_pagination(
     assert response.status_code == 200
     body = response.json()
     expected_ids = [tasks[2].id, tasks[1].id]
+<<<<<<< HEAD
     assert [task["id"] for task in body] == expected_ids
+=======
+    assert [task["id"] for task in body["items"]] == expected_ids
+>>>>>>> development
 
 
 def test_member_list_contains_only_owned_or_assigned_tasks(
@@ -282,5 +298,10 @@ def test_member_list_contains_only_owned_or_assigned_tasks(
     )
 
     assert response.status_code == 200
+<<<<<<< HEAD
     returned_ids = {task["id"] for task in response.json()}
+=======
+    body = response.json()
+    returned_ids = {task["id"] for task in body["items"]}
+>>>>>>> development
     assert returned_ids == {owned_task.id, assigned_task.id}
