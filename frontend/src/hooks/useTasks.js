@@ -8,11 +8,14 @@ import {
 } from "../api/taskApi";
 
 export default function useTasks(initialFilters = {}) {
-    const [tasks, setTasks] = useState([]);
-    const [filters, setFilters] = useState({
+    const initialState = {
         search: "",
         ...initialFilters,
-    });
+    };
+
+    const [tasks, setTasks] = useState([]);
+    const [filters, setFilters] = useState(initialState);
+    const [queryFilters, setQueryFilters] = useState(initialState);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -20,7 +23,7 @@ export default function useTasks(initialFilters = {}) {
         setLoading(true);
         setError(null);
         try {
-            const data = await listTasks(filters);
+            const data = await listTasks(queryFilters);
             setTasks(data);
             return data;
         } catch (err) {
@@ -29,7 +32,7 @@ export default function useTasks(initialFilters = {}) {
         } finally {
             setLoading(false);
         }
-    }, [filters]);
+    }, [queryFilters]);
 
     useEffect(() => {
         refresh();
@@ -62,6 +65,8 @@ export default function useTasks(initialFilters = {}) {
         error,
         filters,
         setFilters,
+        queryFilters,
+        setQueryFilters,
         refresh,
         create,
         update,

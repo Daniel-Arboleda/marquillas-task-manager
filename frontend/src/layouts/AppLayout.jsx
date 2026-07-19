@@ -1,10 +1,10 @@
 import { cloneElement, isValidElement, useState } from "react";
+import { Outlet } from "react-router-dom";
 
 export default function AppLayout({
     header = null,
     sidebar = null,
     footer = null,
-    children,
 }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -30,7 +30,7 @@ export default function AppLayout({
                         : header}
                 </header>
                 <main className="app-main">
-                    {children}
+                    <Outlet />
                 </main>
                 <footer className="app-footer">
                     {footer}

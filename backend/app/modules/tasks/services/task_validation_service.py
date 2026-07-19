@@ -78,6 +78,25 @@ class TaskValidationService:
                 detail="Only administrators can reassign tasks",
             )
 
+    def validate_status_transition(
+        self,
+        current_status: str,
+        requested_status: str | None,
+    ) -> None:
+        if requested_status is None or requested_status == current_status:
+            return
+        allowed_transitions = {
+            "pending": {"in_progress", "completed", "cancelled"},
+            "in_progress": {"pending", "completed", "cancelled"},
+            "completed": {"in_progress"},
+            "cancelled": set(),
+        }
+        if requested_status not in allowed_transitions.get(current_status, set()):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid task status transition",
+            )
+
     def validate_query(
         self,
         current_user_id: int,

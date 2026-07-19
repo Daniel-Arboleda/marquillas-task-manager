@@ -20,6 +20,9 @@ export const listTasks = (params = {}) =>
 export const getTask = (taskId) =>
     httpClient.get(`${TASKS_ENDPOINT}/${taskId}`);
 
+export const getTaskHistory = (taskId) =>
+    httpClient.get(`${TASKS_ENDPOINT}/${taskId}/history`);
+
 export const createTask = (payload) =>
     httpClient.post(TASKS_ENDPOINT, payload);
 

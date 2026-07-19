@@ -61,7 +61,18 @@ class TaskCommandService:
             current_user_id=current_user_id,
             is_admin=is_admin,
         )
-        changes = payload.model_dump(exclude_unset=True)
+        changes = {
+            field: value
+            for field, value in payload.model_dump(exclude_unset=True).items()
+            if getattr(task, field) != value
+        }
+        if not changes:
+            return task
+        if "status" in changes:
+            self.validation.validate_status_transition(
+                current_status=task.status,
+                requested_status=payload.status,
+            )
         if "due_date" in changes:
             self.validation.validate_due_date(payload.due_date)
         if "assigned_user_id" in changes:

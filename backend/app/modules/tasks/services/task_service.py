@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.modules.tasks.repositories.task_repository import TaskRepository
-from app.modules.tasks.schemas.task_schemas import TaskCreate, TaskListResponse, TaskUpdate
+from app.modules.tasks.schemas.task_schemas import TaskCreate, TaskHistoryListResponse, TaskListResponse, TaskUpdate
 from app.modules.tasks.services.task_command_service import TaskCommandService
 from app.modules.tasks.services.task_query_service import TaskQueryService
 from app.modules.tasks.services.task_validation_service import TaskValidationService
@@ -36,6 +36,20 @@ class TaskService:
             is_admin=is_admin,
         )
         return task
+
+    def history(
+        self,
+        task_id: int,
+        current_user_id: int,
+        is_admin: bool,
+    ) -> TaskHistoryListResponse:
+        task = self.query.get(task_id)
+        self.validation.validate_task_access(
+            task=task,
+            current_user_id=current_user_id,
+            is_admin=is_admin,
+        )
+        return self.query.history(task_id)
 
     def list(
         self,

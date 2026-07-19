@@ -1,18 +1,33 @@
 import PriorityBadge from "./PriorityBadge";
 import StatusBadge from "./StatusBadge";
 
+function formatDate(value) {
+    if (!value) {
+        return "-";
+    }
+
+    const date = new Date(value);
+
+    return Number.isNaN(date.getTime())
+        ? "-"
+        : date.toLocaleString();
+}
+
 export default function TaskTable({
     tasks,
     selectedRows = [],
     onSelectionChange,
+    onView,
+    onEdit,
 }) {
-    const allSelected = tasks.length > 0 && selectedRows.length === tasks.length;
+    const allSelected = tasks.length > 0 &&
+        tasks.every((task) => selectedRows.includes(task.id));
 
     function handleSelectAll(event) {
         onSelectionChange?.(
             event.target.checked
                 ? tasks.map((task) => task.id)
-                : []
+                : [],
         );
     }
 
@@ -20,7 +35,7 @@ export default function TaskTable({
         onSelectionChange?.(
             checked
                 ? [...new Set([...selectedRows, taskId])]
-                : selectedRows.filter((id) => id !== taskId)
+                : selectedRows.filter((id) => id !== taskId),
         );
     }
 
@@ -68,7 +83,9 @@ export default function TaskTable({
                                 <input
                                     type="checkbox"
                                     checked={selectedRows.includes(task.id)}
-                                    onChange={(event) => handleSelect(task.id, event.target.checked)}
+                                    onChange={(event) =>
+                                        handleSelect(task.id, event.target.checked)
+                                    }
                                     aria-label={`Select task ${task.id}`}
                                 />
                             </td>
@@ -81,10 +98,22 @@ export default function TaskTable({
                                 <PriorityBadge priority={task.priority} />
                             </td>
                             <td>{task.assigned_user_id ?? "-"}</td>
-                            <td>{task.due_date ?? "-"}</td>
+                            <td>{formatDate(task.due_date)}</td>
                             <td className="table-actions">
-                                <button type="button" aria-label={`View task ${task.id}`}>View</button>
-                                <button type="button" aria-label={`Edit task ${task.id}`}>Edit</button>
+                                <button
+                                    type="button"
+                                    aria-label={`View task ${task.id}`}
+                                    onClick={() => onView?.(task.id)}
+                                >
+                                    View
+                                </button>
+                                <button
+                                    type="button"
+                                    aria-label={`Edit task ${task.id}`}
+                                    onClick={() => onEdit?.(task.id)}
+                                >
+                                    Edit
+                                </button>
                             </td>
                         </tr>
                     ))}
