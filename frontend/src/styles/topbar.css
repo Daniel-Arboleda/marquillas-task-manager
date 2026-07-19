@@ -1,0 +1,106 @@
+.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+    min-height:72px;
+    padding:1rem 1.5rem;
+    background:var(--color-surface,#ffffff);
+    border-bottom:1px solid rgba(0,0,0,.08);
+}
+.topbar-left{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    min-width:0;
+}
+.topbar-heading{
+    min-width:0;
+}
+.topbar-title{
+    margin:0;
+    color:var(--color-text,#111827);
+    font-size:1.5rem;
+    font-weight:700;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.topbar-menu{
+    display:none;
+    align-items:center;
+    justify-content:center;
+    width:42px;
+    height:42px;
+    padding:0;
+    border:none;
+    border-radius:var(--radius-md);
+    background:transparent;
+    color:inherit;
+    cursor:pointer;
+    transition:var(--transition);
+}
+.topbar-menu:hover{
+    background:rgba(0,0,0,.06);
+}
+.topbar-user{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+}
+.topbar-user-info{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    min-width:0;
+}
+.topbar-user-name{
+    color:var(--color-text,#111827);
+    font-weight:600;
+    white-space:nowrap;
+}
+.topbar-user-role{
+    color:var(--color-text-muted,#6b7280);
+    font-size:.875rem;
+    white-space:nowrap;
+}
+.topbar-avatar{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:var(--color-primary);
+    color:#ffffff;
+    font-weight:700;
+    user-select:none;
+}
+.topbar-logout{
+    padding:.6rem 1rem;
+    border:none;
+    border-radius:var(--radius-md);
+    background:transparent;
+    color:inherit;
+    font:inherit;
+    cursor:pointer;
+    transition:var(--transition);
+}
+.topbar-logout:hover{
+    background:rgba(0,0,0,.06);
+}
+@media (max-width:768px){
+    .topbar{
+        width:100%;
+        padding:1rem;
+    }
+    .topbar-menu{
+        display:flex;
+    }
+    .topbar-title{
+        font-size:1.2rem;
+    }
+    .topbar-user-info{
+        display:none;
+    }
+}

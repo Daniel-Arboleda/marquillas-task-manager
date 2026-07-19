@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.modules.auth.auth_dependencies import get_current_user
-from app.modules.tasks.schemas.task_schemas import TaskCreate, TaskResponse, TaskUpdate
+from app.modules.tasks.schemas.task_schemas import TaskCreate, TaskListResponse, TaskResponse, TaskUpdate
 from app.modules.tasks.services.task_service import TaskService
 from app.modules.users.user_model import User
 
@@ -24,8 +24,9 @@ def create_task(
     )
 
 
-@router.get("", response_model=list[TaskResponse])
+@router.get("", response_model=TaskListResponse)
 def list_tasks(
+    search: str | None = Query(default=None),
     status: str | None = Query(default=None),
     priority: str | None = Query(default=None),
     assigned_user_id: int | None = Query(default=None),
@@ -33,11 +34,12 @@ def list_tasks(
     page_size: int = Query(default=20, ge=1, le=100),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> list[TaskResponse]:
+) -> TaskListResponse:
     service = TaskService(db)
     return service.list(
         current_user_id=current_user.id,
         is_admin=current_user.role == "admin",
+        search=search,
         status=status,
         priority=priority,
         assigned_user_id=assigned_user_id,

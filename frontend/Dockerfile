@@ -20,6 +20,7 @@ LABEL org.opencontainers.image.vendor="Nexo Software Factory"
 LABEL org.opencontainers.image.authors="Daniel Arboleda"
 LABEL org.opencontainers.image.version="0.1.0"
 
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
