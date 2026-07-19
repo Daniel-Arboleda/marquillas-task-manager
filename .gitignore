@@ -51,4 +51,7 @@ sqlserver-data/
 # OpenAPI generated artifact
 openapi.json
 
+# Temporary architecture documentation
+tmp/
+
 '@ | Set-Content .gitignore
