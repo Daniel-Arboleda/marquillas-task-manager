@@ -1,0 +1,26 @@
+const TOKEN_KEY = "access_token";
+
+export function getToken() {
+    return localStorage.getItem(TOKEN_KEY);
+}
+
+export function setToken(token) {
+    localStorage.setItem(TOKEN_KEY, token);
+}
+
+export function removeToken() {
+    localStorage.removeItem(TOKEN_KEY);
+}
+
+export function isAuthenticated() {
+    return Boolean(getToken());
+}
+
+const TokenStorage = {
+    getToken,
+    setToken,
+    removeToken,
+    isAuthenticated,
+};
+
+export default TokenStorage;

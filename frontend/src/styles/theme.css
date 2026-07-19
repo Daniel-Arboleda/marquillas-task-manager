@@ -1,0 +1,29 @@
+html{
+    font-size:16px;
+}
+body{
+    background:var(--color-background);
+    color:var(--color-text);
+    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+h1,h2,h3,h4,h5,h6{
+    color:var(--color-secondary);
+    font-weight:700;
+}
+p{
+    color:var(--color-text-muted);
+}
+::selection{
+    background:var(--color-primary);
+    color:#ffffff;
+}
+::-webkit-scrollbar{
+    width:10px;
+}
+::-webkit-scrollbar-thumb{
+    background:#cbd5e1;
+    border-radius:999px;
+}
+::-webkit-scrollbar-thumb:hover{
+    background:#94a3b8;
+}
