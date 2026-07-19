@@ -7,6 +7,7 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
     const [token, setToken] = useState(TokenStorage.getToken());
     const [user, setUser] = useState(null);
+    const [initializing, setInitializing] = useState(true);
 
     const clearSession = useCallback(() => {
         TokenStorage.removeToken();
@@ -16,6 +17,7 @@ export function AuthProvider({ children }) {
 
     const loadCurrentUser = useCallback(async () => {
         if (!token) {
+            setInitializing(false);
             return;
         }
         try {
@@ -23,12 +25,25 @@ export function AuthProvider({ children }) {
             setUser(currentUser);
         } catch {
             clearSession();
+        } finally {
+            setInitializing(false);
         }
     }, [token, clearSession]);
 
     useEffect(() => {
+        setInitializing(true);
         loadCurrentUser();
     }, [loadCurrentUser]);
+
+    useEffect(() => {
+        function handleUnauthorized() {
+            clearSession();
+        }
+        window.addEventListener("auth:unauthorized", handleUnauthorized);
+        return () => {
+            window.removeEventListener("auth:unauthorized", handleUnauthorized);
+        };
+    }, [clearSession]);
 
     async function login(credentials) {
         const response = await authApi.login(credentials);
@@ -49,9 +64,10 @@ export function AuthProvider({ children }) {
             user,
             login,
             logout,
+            initializing,
             isAuthenticated: Boolean(token),
         }),
-        [token, user],
+        [token, user, initializing],
     );
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

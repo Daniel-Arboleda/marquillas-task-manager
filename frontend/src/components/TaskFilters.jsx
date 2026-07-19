@@ -3,9 +3,6 @@ export default function TaskFilters({
     onChange,
     selectedCount = 0,
     onCreate,
-    onBulkAssign,
-    onBulkComplete,
-    onBulkDelete,
 }) {
     function handleChange(event) {
         const { name, value } = event.target;
@@ -57,24 +54,6 @@ export default function TaskFilters({
                     <span className="task-selection-count">
                         {selectedCount} selected
                     </span>
-                    <button
-                        type="button"
-                        onClick={onBulkAssign}
-                    >
-                        Assign
-                    </button>
-                    <button
-                        type="button"
-                        onClick={onBulkComplete}
-                    >
-                        Complete
-                    </button>
-                    <button
-                        type="button"
-                        onClick={onBulkDelete}
-                    >
-                        Delete
-                    </button>
                 </div>
             )}
         </section>

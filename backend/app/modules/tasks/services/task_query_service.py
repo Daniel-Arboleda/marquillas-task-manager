@@ -3,7 +3,7 @@ from math import ceil
 from fastapi import HTTPException, status
 
 from app.modules.tasks.repositories.task_repository import TaskRepository
-from app.modules.tasks.schemas.task_schemas import TaskListResponse
+from app.modules.tasks.schemas.task_schemas import TaskHistoryListResponse, TaskHistoryResponse, TaskListResponse
 from app.modules.tasks.task_model import Task
 
 
@@ -49,4 +49,13 @@ class TaskQueryService:
             total_pages=total_pages,
             has_next=page < total_pages,
             has_previous=page > 1,
+        )
+
+    def history(self, task_id: int) -> TaskHistoryListResponse:
+        self.get(task_id)
+        return TaskHistoryListResponse(
+            items=[
+                TaskHistoryResponse.model_validate(history)
+                for history in self.repository.list_history(task_id)
+            ],
         )

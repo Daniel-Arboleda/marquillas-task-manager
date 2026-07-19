@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
@@ -27,7 +29,7 @@ class TaskRepository:
         search: str | None = None,
         page: int = 1,
         page_size: int = 20,
-    ) -> tuple[list[Task], int]:
+    ) -> tuple[List[Task], int]:
         query = select(Task)
         if user_id is not None:
             query = query.where(
@@ -61,6 +63,15 @@ class TaskRepository:
             ).all()
         )
         return tasks, total
+
+    def list_history(self, task_id: int) -> List[TaskHistory]:
+        return list(
+            self.db.scalars(
+                select(TaskHistory)
+                .where(TaskHistory.task_id == task_id)
+                .order_by(TaskHistory.created_at.desc(), TaskHistory.id.desc())
+            ).all()
+        )
 
     def update(self, task: Task) -> Task:
         self.db.flush()

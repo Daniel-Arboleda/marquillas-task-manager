@@ -2,6 +2,8 @@ import TokenStorage from "../auth/TokenStorage";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
+let unauthorizedEventDispatched = false;
+
 function buildHeaders(token, headers = {}) {
     const accessToken = token ?? TokenStorage.getToken();
     return {
@@ -57,10 +59,23 @@ async function request(path, { method = "GET", body, token, headers, params } = 
             };
         }
 
+        if (response.status === 401) {
+            TokenStorage.removeToken();
+
+            if (!unauthorizedEventDispatched) {
+                unauthorizedEventDispatched = true;
+                window.dispatchEvent(new CustomEvent("auth:unauthorized"));
+            }
+        }
+
         throw {
             status: response.status,
             ...error,
         };
+    }
+
+    if (unauthorizedEventDispatched) {
+        unauthorizedEventDispatched = false;
     }
 
     if (response.status === 204) {
