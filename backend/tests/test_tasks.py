@@ -163,12 +163,8 @@ def test_admin_filters_tasks_by_status(
 
     assert response.status_code == 200
     body = response.json()
-<<<<<<< HEAD
-    assert [task["id"] for task in body] == [completed_task.id]
-=======
-    assert [task["id"] for task in body["items"]] == [completed_task.id]
->>>>>>> development
 
+    assert [task["id"] for task in body["items"]] == [completed_task.id]
 
 def test_admin_filters_tasks_by_priority(
     client: TestClient,
@@ -196,11 +192,8 @@ def test_admin_filters_tasks_by_priority(
 
     assert response.status_code == 200
     body = response.json()
-<<<<<<< HEAD
-    assert [task["id"] for task in body] == [critical_task.id]
-=======
+
     assert [task["id"] for task in body["items"]] == [critical_task.id]
->>>>>>> development
 
 
 def test_admin_filters_tasks_by_assigned_user(
@@ -231,11 +224,8 @@ def test_admin_filters_tasks_by_assigned_user(
 
     assert response.status_code == 200
     body = response.json()
-<<<<<<< HEAD
-    assert [task["id"] for task in body] == [assigned_task.id]
-=======
+
     assert [task["id"] for task in body["items"]] == [assigned_task.id]
->>>>>>> development
 
 
 def test_task_list_applies_pagination(
@@ -262,11 +252,8 @@ def test_task_list_applies_pagination(
     assert response.status_code == 200
     body = response.json()
     expected_ids = [tasks[2].id, tasks[1].id]
-<<<<<<< HEAD
-    assert [task["id"] for task in body] == expected_ids
-=======
+
     assert [task["id"] for task in body["items"]] == expected_ids
->>>>>>> development
 
 
 def test_member_list_contains_only_owned_or_assigned_tasks(
@@ -298,10 +285,235 @@ def test_member_list_contains_only_owned_or_assigned_tasks(
     )
 
     assert response.status_code == 200
-<<<<<<< HEAD
-    returned_ids = {task["id"] for task in response.json()}
-=======
+
     body = response.json()
-    returned_ids = {task["id"] for task in body["items"]}
->>>>>>> development
-    assert returned_ids == {owned_task.id, assigned_task.id}
+
+    returned_ids = {
+        task["id"]
+        for task in body["items"]
+    }
+
+    assert returned_ids == {
+        owned_task.id,
+        assigned_task.id,
+    }
+
+
+def test_admin_summary_returns_global_counts(
+    client: TestClient,
+    admin_token: str,
+    admin_user: User,
+    auth_headers,
+    task_factory,
+) -> None:
+    task_factory(
+        title="Pending",
+        created_by=admin_user.id,
+        status="pending",
+        priority="low",
+    )
+    task_factory(
+        title="In Progress",
+        created_by=admin_user.id,
+        status="in_progress",
+        priority="medium",
+    )
+    task_factory(
+        title="Completed",
+        created_by=admin_user.id,
+        status="completed",
+        priority="high",
+    )
+
+    response = client.get(
+        "/api/tasks/summary",
+        headers=auth_headers(admin_token),
+    )
+
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert body["total"] == 3
+    assert body["pending"] == 1
+    assert body["in_progress"] == 1
+    assert body["completed"] == 1
+    assert body["low_priority"] == 1
+    assert body["medium_priority"] == 1
+    assert body["high_priority"] == 1
+
+
+def test_member_summary_returns_only_visible_tasks(
+    client: TestClient,
+    member_user: User,
+    other_member_user: User,
+    member_token: str,
+    auth_headers,
+    task_factory,
+) -> None:
+    task_factory(
+        title="Owned",
+        created_by=member_user.id,
+        status="pending",
+    )
+
+    task_factory(
+        title="Assigned",
+        created_by=other_member_user.id,
+        assigned_user_id=member_user.id,
+        status="completed",
+    )
+
+    task_factory(
+        title="Hidden",
+        created_by=other_member_user.id,
+        assigned_user_id=other_member_user.id,
+        status="pending",
+    )
+
+    response = client.get(
+        "/api/tasks/summary",
+        headers=auth_headers(member_token),
+    )
+
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert body["total"] == 2
+    assert body["pending"] == 1
+    assert body["completed"] == 1
+
+
+def test_summary_requires_authentication(
+    client: TestClient,
+) -> None:
+    response = client.get("/api/tasks/summary")
+
+    assert response.status_code == 401
+
+
+def test_summary_changes_after_task_creation(
+    client: TestClient,
+    member_token: str,
+    auth_headers,
+) -> None:
+    before = client.get(
+        "/api/tasks/summary",
+        headers=auth_headers(member_token),
+    ).json()
+
+    create_response = client.post(
+        "/api/tasks",
+        json=task_payload(),
+        headers=auth_headers(member_token),
+    )
+
+    assert create_response.status_code == 201
+
+    after = client.get(
+        "/api/tasks/summary",
+        headers=auth_headers(member_token),
+    ).json()
+
+    assert after["total"] == before["total"] + 1
+    assert after["pending"] == before["pending"] + 1
+
+
+def test_summary_changes_after_status_update(
+    client: TestClient,
+    member_user: User,
+    member_token: str,
+    auth_headers,
+    task_factory,
+) -> None:
+    task = task_factory(
+        title="Status update",
+        created_by=member_user.id,
+        status="pending",
+    )
+
+    before = client.get(
+        "/api/tasks/summary",
+        headers=auth_headers(member_token),
+    ).json()
+
+    response = client.patch(
+        f"/api/tasks/{task.id}",
+        json={"status": "completed"},
+        headers=auth_headers(member_token),
+    )
+
+    assert response.status_code == 200
+
+    after = client.get(
+        "/api/tasks/summary",
+        headers=auth_headers(member_token),
+    ).json()
+
+    assert after["pending"] == before["pending"] - 1
+    assert after["completed"] == before["completed"] + 1
+
+
+def test_filter_by_assigned_user_returns_expected_tasks(
+    client: TestClient,
+    admin_user: User,
+    member_user: User,
+    other_member_user: User,
+    admin_token: str,
+    auth_headers,
+    task_factory,
+) -> None:
+    expected = task_factory(
+        title="Expected",
+        created_by=admin_user.id,
+        assigned_user_id=member_user.id,
+    )
+
+    task_factory(
+        title="Ignored",
+        created_by=admin_user.id,
+        assigned_user_id=other_member_user.id,
+    )
+
+    response = client.get(
+        "/api/tasks",
+        params={"assigned_user_id": member_user.id},
+        headers=auth_headers(admin_token),
+    )
+
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert [task["id"] for task in body["items"]] == [expected.id]
+
+
+def test_search_filter_returns_matching_tasks(
+    client: TestClient,
+    admin_user: User,
+    admin_token: str,
+    auth_headers,
+    task_factory,
+) -> None:
+    matching = task_factory(
+        title="Hydraulic inspection",
+        created_by=admin_user.id,
+    )
+
+    task_factory(
+        title="Electrical maintenance",
+        created_by=admin_user.id,
+    )
+
+    response = client.get(
+        "/api/tasks",
+        params={"search": "Hydraulic"},
+        headers=auth_headers(admin_token),
+    )
+
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert [task["id"] for task in body["items"]] == [matching.id]

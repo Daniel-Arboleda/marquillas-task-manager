@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.modules.tasks.repositories.task_repository import TaskRepository
-from app.modules.tasks.schemas.task_schemas import TaskCreate, TaskUpdate
+from app.modules.tasks.schemas.task_schemas import TaskCreate, TaskStatus, TaskUpdate
 from app.modules.tasks.services.task_validation_service import TaskValidationService
 from app.modules.tasks.task_history_model import TaskHistory
 from app.modules.tasks.task_model import Task
@@ -87,6 +87,35 @@ class TaskCommandService:
         try:
             self.repository.update(task)
             self._register_history(task.id, "updated", current_user_id)
+            self.db.commit()
+            self.db.refresh(task)
+            return task
+        except Exception:
+            self.db.rollback()
+            raise
+
+    def update_status(
+        self,
+        task: Task,
+        status: TaskStatus,
+        current_user_id: int,
+        is_admin: bool,
+    ) -> Task:
+        self.validation.validate_task_access(
+            task=task,
+            current_user_id=current_user_id,
+            is_admin=is_admin,
+        )
+        self.validation.validate_status_transition(
+            current_status=task.status,
+            requested_status=status,
+        )
+        if task.status == status:
+            return task
+        task.status = status
+        try:
+            self.repository.update(task)
+            self._register_history(task.id, "status_updated", current_user_id)
             self.db.commit()
             self.db.refresh(task)
             return task
