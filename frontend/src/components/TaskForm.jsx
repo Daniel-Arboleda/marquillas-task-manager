@@ -14,6 +14,9 @@ const PRIORITY_OPTIONS = [
     { value: "critical", label: "Critical" },
 ];
 
+const STATUS_VALUES = new Set(STATUS_OPTIONS.map(({ value }) => value));
+const PRIORITY_VALUES = new Set(PRIORITY_OPTIONS.map(({ value }) => value));
+
 function toLocalDateTime(value) {
     if (!value) {
         return "";
@@ -57,15 +60,24 @@ export default function TaskForm({
         setDueDate(toLocalDateTime(initialValues.due_date));
     }, [initialValues]);
 
+    const normalizedTitle = title.trim();
+    const normalizedDescription = description.trim();
+
     const validationError = useMemo(() => {
-        if (!title.trim()) {
+        if (!normalizedTitle) {
             return "Title is required.";
         }
-        if (title.trim().length > 200) {
+        if (normalizedTitle.length > 200) {
             return "Title cannot exceed 200 characters.";
         }
-        if (description.length > 5000) {
+        if (normalizedDescription.length > 5000) {
             return "Description cannot exceed 5000 characters.";
+        }
+        if (!STATUS_VALUES.has(status)) {
+            return "Invalid status.";
+        }
+        if (!PRIORITY_VALUES.has(priority)) {
+            return "Invalid priority.";
         }
         if (dueDate) {
             const selectedDate = new Date(dueDate);
@@ -74,7 +86,7 @@ export default function TaskForm({
             }
         }
         return null;
-    }, [title, description, dueDate]);
+    }, [normalizedTitle, normalizedDescription, status, priority, dueDate]);
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -84,9 +96,10 @@ export default function TaskForm({
         }
 
         const payload = {
-            title: title.trim(),
-            description: description.trim() || null,
+            title: normalizedTitle,
+            description: normalizedDescription || null,
             priority,
+            due_date: dueDate ? new Date(dueDate).toISOString() : null,
         };
 
         if (allowStatusChange) {
@@ -95,10 +108,6 @@ export default function TaskForm({
 
         if (allowAssignment) {
             payload.assigned_user_id = assignedUserId === "" ? null : Number(assignedUserId);
-        }
-
-        if (dueDate) {
-            payload.due_date = new Date(dueDate).toISOString();
         }
 
         onSubmit?.(payload);

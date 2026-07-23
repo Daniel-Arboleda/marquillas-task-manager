@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
 
@@ -29,3 +29,5 @@ class Task(Base):
     created_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.sysutcdatetime())
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.sysutcdatetime(), onupdate=func.sysutcdatetime())
+    assigned_user: Mapped["User | None"] = relationship("User", foreign_keys=[assigned_user_id], lazy="selectin")
+    created_by_user: Mapped["User | None"] = relationship("User", foreign_keys=[created_by], lazy="selectin")

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.modules.auth.auth_dependencies import get_current_user
-from app.modules.tasks.schemas.task_schemas import TaskCreate, TaskHistoryListResponse, TaskListResponse, TaskPriority, TaskResponse, TaskStatus, TaskUpdate
+from app.modules.tasks.schemas.task_schemas import TaskCreate, TaskHistoryListResponse, TaskListResponse, TaskPriority, TaskResponse, TaskStatus, TaskStatusUpdate, TaskSummaryResponse, TaskUpdate
 from app.modules.tasks.services.task_service import TaskService
 from app.modules.users.user_model import User
 
@@ -48,6 +48,22 @@ def list_tasks(
     )
 
 
+@router.get("/summary", response_model=TaskSummaryResponse)
+def get_task_summary(
+    search: str | None = Query(default=None, max_length=200),
+    assigned_user_id: int | None = Query(default=None, ge=1),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> TaskSummaryResponse:
+    service = TaskService(db)
+    return service.get_summary(
+        current_user_id=current_user.id,
+        is_admin=current_user.role == "admin",
+        assigned_user_id=assigned_user_id,
+        search=search,
+    )
+
+
 @router.get("/{task_id}/history", response_model=TaskHistoryListResponse)
 def get_task_history(
     task_id: int = Path(ge=1),
@@ -87,6 +103,22 @@ def update_task(
     return service.update(
         task_id=task_id,
         payload=payload,
+        current_user_id=current_user.id,
+        is_admin=current_user.role == "admin",
+    )
+
+
+@router.patch("/{task_id}/status", response_model=TaskResponse)
+def update_task_status(
+    payload: TaskStatusUpdate,
+    task_id: int = Path(ge=1),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> TaskResponse:
+    service = TaskService(db)
+    return service.update_status(
+        task_id=task_id,
+        status=payload.status,
         current_user_id=current_user.id,
         is_admin=current_user.role == "admin",
     )

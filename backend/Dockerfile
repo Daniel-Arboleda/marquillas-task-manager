@@ -9,6 +9,7 @@ LABEL org.opencontainers.image.title="Marquillas Task Manager" \
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
 
 WORKDIR /app
 

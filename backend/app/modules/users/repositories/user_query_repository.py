@@ -12,7 +12,7 @@ class UserQueryRepository:
         return list(
             self.db.scalars(
                 select(User)
-                .where(User.is_active.is_(True))
+                .where(User.is_active == True)
                 .order_by(User.name.asc(), User.id.asc())
             ).all()
         )

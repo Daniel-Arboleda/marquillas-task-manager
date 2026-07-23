@@ -20,6 +20,9 @@ export const listTasks = (params = {}) =>
 export const getTask = (taskId) =>
     httpClient.get(`${TASKS_ENDPOINT}/${taskId}`);
 
+export const getTaskSummary = () =>
+    httpClient.get(`${TASKS_ENDPOINT}/summary`);
+
 export const getTaskHistory = (taskId) =>
     httpClient.get(`${TASKS_ENDPOINT}/${taskId}/history`);
 
@@ -28,6 +31,9 @@ export const createTask = (payload) =>
 
 export const updateTask = (taskId, payload) =>
     httpClient.patch(`${TASKS_ENDPOINT}/${taskId}`, payload);
+
+export const updateTaskStatus = (taskId, payload) =>
+    httpClient.patch(`${TASKS_ENDPOINT}/${taskId}/status`, payload);
 
 export const deleteTask = (taskId) =>
     httpClient.delete(`${TASKS_ENDPOINT}/${taskId}`);

@@ -16,11 +16,19 @@ function formatDate(value) {
 export default function TaskTable({
     tasks,
     selectedRows = [],
+    permissions,
+    canEdit = true,
+    canDelete = true,
     onSelectionChange,
     onView,
     onEdit,
+    onDelete,
 }) {
-    const allSelected = tasks.length > 0 &&
+    const allowEdit = permissions?.edit ?? canEdit;
+    const allowDelete = permissions?.delete ?? canDelete;
+
+    const allSelected =
+        tasks.length > 0 &&
         tasks.every((task) => selectedRows.includes(task.id));
 
     function handleSelectAll(event) {
@@ -36,6 +44,14 @@ export default function TaskTable({
             checked
                 ? [...new Set([...selectedRows, taskId])]
                 : selectedRows.filter((id) => id !== taskId),
+        );
+    }
+
+    if (!tasks.length) {
+        return (
+            <div className="table-empty">
+                No tasks found.
+            </div>
         );
     }
 
@@ -97,7 +113,7 @@ export default function TaskTable({
                             <td>
                                 <PriorityBadge priority={task.priority} />
                             </td>
-                            <td>{task.assigned_user_id ?? "-"}</td>
+                            <td>{task.assigned_user_name ?? task.assigned_user_id ?? "-"}</td>
                             <td>{formatDate(task.due_date)}</td>
                             <td className="table-actions">
                                 <button
@@ -107,13 +123,24 @@ export default function TaskTable({
                                 >
                                     View
                                 </button>
-                                <button
-                                    type="button"
-                                    aria-label={`Edit task ${task.id}`}
-                                    onClick={() => onEdit?.(task.id)}
-                                >
-                                    Edit
-                                </button>
+                                {allowEdit && (
+                                    <button
+                                        type="button"
+                                        aria-label={`Edit task ${task.id}`}
+                                        onClick={() => onEdit?.(task.id)}
+                                    >
+                                        Edit
+                                    </button>
+                                )}
+                                {allowDelete && (
+                                    <button
+                                        type="button"
+                                        aria-label={`Delete task ${task.id}`}
+                                        onClick={() => onDelete?.(task.id)}
+                                    >
+                                        Delete
+                                    </button>
+                                )}
                             </td>
                         </tr>
                     ))}

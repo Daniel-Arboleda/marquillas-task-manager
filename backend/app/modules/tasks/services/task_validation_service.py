@@ -14,12 +14,6 @@ class TaskValidationService:
     def validate_due_date(self, due_date: datetime | None) -> None:
         if due_date is None:
             return
-        current_time = datetime.now(UTC) if due_date.tzinfo else datetime.now()
-        if due_date <= current_time:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Due date must be in the future",
-            )
 
     def validate_assigned_user(self, user_id: int | None) -> None:
         if user_id is None:

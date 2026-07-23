@@ -1,4 +1,3 @@
-
 # ======================================================
 
 # Marquillas Task Manager
@@ -6,15 +5,19 @@
 # API VALIDATION TEST
 
 # Version
-v0.5.0
+
+v0.6.0
 
 # Status
+
 Validated
 
 # Date
+
 2026-07-17
 
 # Author
+
 Daniel Arboleda Tangarife
 
 # ======================================================
@@ -24,6 +27,7 @@ Daniel Arboleda Tangarife
 ## Objetivo
 
 ---
+
 Responder dos preguntas:
 
 > ¿Cómo valido que todo funciona?
@@ -39,7 +43,7 @@ No explicar Python.
 No explicar FastAPI.
 
 Eso ya está en el README.
----
+--------------------------
 
 ---
 
@@ -190,7 +194,7 @@ Aquí sí haría una guía paso a paso.
 ## Running the tests
 
 ```
-docker compose exec backend sh -c "PYTHONPATH=/app pytest -v"
+docker compose exec backend pytest -v
 ```
 
 No asumir que sabe Python.
@@ -204,11 +208,17 @@ Explicar:
 ## Current Result
 
 ```
-18 tests collected
+25 tests collected
 
-13 passed
+25 passed
 
-5 pending adjustments
+0 failed
+
+0 errors
+
+Execution time
+
+Approximately 10 seconds
 ```
 
 ---
@@ -224,9 +234,12 @@ Tabla.
 | RBAC             | ✅     |
 | CRUD Tasks       | ✅     |
 | Business Rules   | ✅     |
+| Task Summary     | ✅     |
+| Search           | ✅     |
 | Filters          | ✅     |
 | Pagination       | ✅     |
 | Health Endpoints | ✅     |
+| Users            | ✅     |
 
 ---
 
@@ -235,54 +248,47 @@ Tabla.
 Muy transparente.
 
 ```
-Current pending items:
+No pending automated test adjustments.
 
-• Email validation fixtures using reserved domains.
-
-• PYTHONPATH configuration when executing pytest outside the application context.
-
-These items affect only the automated test fixtures and not the REST API implementation.
+The automated validation suite is currently stable and all implemented tests are passing successfully.
 ```
-
-Esto es importante porque demuestra que distingues entre un problema de infraestructura de pruebas y un defecto funcional.
 
 ---
 
 # 6. Functional Validation Matrix
 
-Una tabla.
-
-| Feature            | Endpoint               | Expected |
-| ------------------ | ---------------------- | -------- |
-| Health             | GET /health            | 200      |
-| Database           | GET /health/database   | 200      |
-| Login              | POST /api/auth/login   | 200      |
-| Invalid Login      | POST /api/auth/login   | 401      |
-| Current User       | GET /api/auth/me       | 200      |
-| Create User        | POST /api/users        | 201      |
-| Duplicate User     | POST /api/users        | 409      |
-| Member Create User | POST /api/users        | 403      |
-| Create Task        | POST /api/tasks        | 201      |
-| Invalid Task       | POST /api/tasks        | 422      |
-| Update Task        | PATCH /api/tasks/{id}  | 200      |
-| Delete Task        | DELETE /api/tasks/{id} | 204      |
-
-Mucho más fácil de revisar que páginas de texto.
+| Feature                 | Endpoint                                  | Expected |
+| ----------------------- | ----------------------------------------- | -------- |
+| Health                  | GET /health                               | 200      |
+| Database                | GET /health/database                      | 200      |
+| Login                   | POST /api/auth/login                      | 200      |
+| Invalid Login           | POST /api/auth/login                      | 401      |
+| Current User            | GET /api/auth/me                          | 200      |
+| Create User             | POST /api/users                           | 201      |
+| Duplicate User          | POST /api/users                           | 409      |
+| Member Create User      | POST /api/users                           | 403      |
+| Create Task             | POST /api/tasks                           | 201      |
+| Invalid Task            | POST /api/tasks                           | 422      |
+| Update Task             | PATCH /api/tasks/{id}                     | 200      |
+| Delete Task             | DELETE /api/tasks/{id}                    | 204      |
+| Task Summary            | GET /api/tasks/summary                    | 200      |
+| Search Tasks            | GET /api/tasks?search={text}              | 200      |
+| Filter by Assigned User | GET /api/tasks?assigned_user_id={user_id} | 200      |
 
 ---
 
 # 7. RBAC Validation
 
-Tabla.
 
-| Operation         | Admin | Member |
-| ----------------- | ----- | ------ |
-| Create User       | ✅    | ❌403  |
-| Create Task       | ✅    | ✅     |
-| Update Own Task   | ✅    | ✅     |
-| Update Other Task | ✅    | ❌403  |
-| Reassign Task     | ✅    | ❌403  |
-| Delete Task       | ✅    | ❌403  |
+| Operation         | Admin | Member          |
+| ----------------- | ----- | --------------- |
+| Create User       | ✅    | ❌403           |
+| Create Task       | ✅    | ✅              |
+| Update Own Task   | ✅    | ✅              |
+| Update Other Task | ✅    | ❌403           |
+| Reassign Task     | ✅    | ❌403           |
+| Delete Task       | ✅    | ❌403           |
+| View Summary      | ✅    | ✅ (Restricted) |
 
 ---
 
@@ -297,6 +303,8 @@ Resultado
 ```
 SUCCESS
 ```
+
+El backend ya puede ejecutar directamente la suite de pruebas
 
 ---
 
@@ -330,24 +338,25 @@ Estado
 
 # 9. Evidence Summary
 
-Una tabla ejecutiva.
-
-| Validation                     | Result  |
-| ------------------------------ | ------- |
-| Docker Build                   | ✅      |
-| Containers Running             | ✅      |
-| Health Endpoint                | ✅      |
-| Database Health                | ✅      |
-| Swagger                        | ✅      |
-| OpenAPI                        | ✅      |
-| JWT Authentication             | ✅      |
-| CRUD Tasks                     | ✅      |
-| RBAC                           | ✅      |
-| Alembic                        | ✅      |
-| Automated Tests Infrastructure | ✅      |
-| Automated Tests Executed       | ✅      |
-| Tests Passed                   | 13 / 18 |
-| Pending Adjustments            | 5       |
+| Validation                    | Result  |
+| ----------------------------- | ------- |
+| Docker Build                  | ✅      |
+| Containers Running            | ✅      |
+| Health Endpoint               | ✅      |
+| Database Health               | ✅      |
+| Swagger                       | ✅      |
+| OpenAPI                       | ✅      |
+| JWT Authentication            | ✅      |
+| CRUD Tasks                    | ✅      |
+| RBAC                          | ✅      |
+| Task Summary                  | ✅      |
+| Search Filters                | ✅      |
+| Pagination                    | ✅      |
+| Alembic                       | ✅      |
+| Automated Test Infrastructure | ✅      |
+| Automated Tests Executed      | ✅      |
+| Tests Passed                  | 25 / 25 |
+| Pending Adjustments           | 0       |
 
 ---
 
@@ -390,6 +399,18 @@ Task Module
 
 VALIDATED
 
+Task Summary
+
+VALIDATED
+
+Search
+
+VALIDATED
+
+Pagination
+
+VALIDATED
+
 Database Migrations
 
 VALIDATED
@@ -398,13 +419,15 @@ Automated Test Infrastructure
 
 VALIDATED
 
-Current Automated Test Execution
+Automated Test Execution
 
-18 tests collected
+25 tests collected
 
-13 passed
+25 passed
 
-5 pending adjustments
+0 failed
+
+0 errors
 
 Project status
 

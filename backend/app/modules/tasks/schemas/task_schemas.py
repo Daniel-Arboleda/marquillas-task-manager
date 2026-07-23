@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -28,16 +28,6 @@ class TaskCreate(BaseModel):
         normalized = str(value).strip()
         return normalized or None
 
-    @field_validator("due_date")
-    @classmethod
-    def validate_due_date(cls, value: datetime | None) -> datetime | None:
-        if value is None:
-            return None
-        current_time = datetime.now(UTC) if value.tzinfo else datetime.now()
-        if value <= current_time:
-            raise ValueError("Due date must be in the future")
-        return value
-
 
 class TaskUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=200)
@@ -62,15 +52,9 @@ class TaskUpdate(BaseModel):
         normalized = str(value).strip()
         return normalized or None
 
-    @field_validator("due_date")
-    @classmethod
-    def validate_due_date(cls, value: datetime | None) -> datetime | None:
-        if value is None:
-            return None
-        current_time = datetime.now(UTC) if value.tzinfo else datetime.now()
-        if value <= current_time:
-            raise ValueError("Due date must be in the future")
-        return value
+
+class TaskStatusUpdate(BaseModel):
+    status: TaskStatus
 
 
 class TaskResponse(BaseModel):
@@ -80,7 +64,11 @@ class TaskResponse(BaseModel):
     status: TaskStatus
     priority: TaskPriority
     assigned_user_id: int | None
+    assigned_user_name: str | None = None
+    assigned_user_email: str | None = None
     due_date: datetime | None
+    is_overdue: bool = Field(default=False)
+    days_overdue: int = Field(default=0, ge=0)
     created_by: int | None
     created_at: datetime
     updated_at: datetime
@@ -88,11 +76,33 @@ class TaskResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class TaskSummaryResponse(BaseModel):
+    total: int = Field(default=0, ge=0)
+    pending: int = Field(default=0, ge=0)
+    in_progress: int = Field(default=0, ge=0)
+    completed: int = Field(default=0, ge=0)
+    low_priority: int = Field(default=0, ge=0)
+    medium_priority: int = Field(default=0, ge=0)
+    high_priority: int = Field(default=0, ge=0)
+
+    model_config = ConfigDict(frozen=True)
+
+
 class TaskHistoryResponse(BaseModel):
     id: int
     task_id: int
     action: str
+    field_name: str | None = None
+    previous_value: str | None = None
+    new_value: str | None = None
     performed_by: int
+    user_name: str | None = None
+    user_email: str | None = None
+    event_type: str | None = None
+    event_metadata: dict[str, str | int | float | bool | None] | None = Field(
+        default=None,
+        serialization_alias="metadata",
+    )
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

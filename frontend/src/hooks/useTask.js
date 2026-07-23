@@ -18,6 +18,7 @@ export default function useTask(taskId) {
     const refresh = useCallback(async () => {
         if (!taskId) {
             setTask(null);
+            setError(null);
             return null;
         }
 
@@ -39,6 +40,7 @@ export default function useTask(taskId) {
     const refreshHistory = useCallback(async () => {
         if (!taskId) {
             setHistory([]);
+            setHistoryError(null);
             return [];
         }
 
@@ -59,8 +61,8 @@ export default function useTask(taskId) {
     }, [taskId]);
 
     useEffect(() => {
-        refresh();
-        refreshHistory();
+        void refresh();
+        void refreshHistory();
     }, [refresh, refreshHistory]);
 
     async function update(payload) {
