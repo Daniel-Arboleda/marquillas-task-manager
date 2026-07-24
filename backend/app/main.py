@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.modules.ai.api.ai_routes import router as ai_router
 from app.modules.auth.api.auth_routes import router as auth_router
 from app.modules.health.health_routes import router as health_router
 from app.modules.tasks.api.task_routes import router as task_router
@@ -26,3 +27,4 @@ app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(task_router)
+app.include_router(ai_router)

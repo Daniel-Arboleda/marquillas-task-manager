@@ -279,7 +279,6 @@ The automated validation suite is currently stable and all implemented tests are
 
 # 7. RBAC Validation
 
-
 | Operation         | Admin | Member          |
 | ----------------- | ----- | --------------- |
 | Create User       | ✅    | ❌403           |

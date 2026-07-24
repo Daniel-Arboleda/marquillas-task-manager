@@ -1,6 +1,7 @@
 import TokenStorage from "../auth/TokenStorage";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+const LOGIN_ENDPOINT = "/api/auth/login";
 
 let unauthorizedEventDispatched = false;
 
@@ -59,7 +60,7 @@ async function request(path, { method = "GET", body, token, headers, params } = 
             };
         }
 
-        if (response.status === 401) {
+        if (response.status === 401 && path !== LOGIN_ENDPOINT) {
             TokenStorage.removeToken();
 
             if (!unauthorizedEventDispatched) {
