@@ -23,8 +23,10 @@ export function AuthProvider({ children }) {
         try {
             const currentUser = await authApi.getCurrentUser();
             setUser(currentUser);
-        } catch {
-            clearSession();
+        } catch (error) {
+            if (error?.status === 401) {
+                clearSession();
+            }
         } finally {
             setInitializing(false);
         }

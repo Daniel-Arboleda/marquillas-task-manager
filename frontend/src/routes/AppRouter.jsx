@@ -6,6 +6,7 @@ import TopBar from "../components/TopBar";
 import AppLayout from "../layouts/AppLayout";
 import DashboardPage from "../pages/DashboardPage";
 import LoginPage from "../pages/LoginPage";
+import UnderConstructionPage from "../pages/UnderConstructionPage";
 import TaskCreatePage from "../modules/task/pages/TaskCreatePage";
 import TaskDetailPage from "../modules/task/pages/TaskDetailPage";
 import TasksPage from "../modules/task/pages/TasksPage";
@@ -46,6 +47,14 @@ export default function AppRouter() {
                     <Route
                         path="/app/tasks/:taskId"
                         element={<TaskDetailPage />}
+                    />
+                    <Route
+                        path="/app/users"
+                        element={<UnderConstructionPage />}
+                    />
+                    <Route
+                        path="/app/*"
+                        element={<Navigate replace to="/app" />}
                     />
                 </Route>
                 <Route
