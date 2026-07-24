@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_access_token_expire_minutes: int = Field(default=60, ge=1, le=1440)
 
+    # openai_api_key: SecretStr
+    # openai_model: str = "gpt-5.5"
+    # openai_model: str = "o3-mini"
+    # openai_timeout_seconds: int = Field(default=8, ge=1, le=60)
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

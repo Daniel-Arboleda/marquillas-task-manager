@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -14,6 +14,12 @@ class TaskValidationService:
     def validate_due_date(self, due_date: datetime | None) -> None:
         if due_date is None:
             return
+        now = datetime.now(due_date.tzinfo) if due_date.tzinfo else datetime.now()
+        if due_date <= now:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Due date must be in the future",
+            )
 
     def validate_assigned_user(self, user_id: int | None) -> None:
         if user_id is None:
